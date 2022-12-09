@@ -3,6 +3,8 @@ if __name__ == "__main__":
         fs = {}
         cwd = fs
 
+        names = []
+
         for l in file:
             l = l.strip()
             if l.startswith("$ cd "):
@@ -12,6 +14,7 @@ if __name__ == "__main__":
                     continue
 
                 if d not in cwd:
+                    names.append(d)
                     cwd[d] = {"..": cwd}
 
                 cwd = cwd[d]
@@ -31,6 +34,7 @@ if __name__ == "__main__":
             sizes.append(s)
             return s
 
+        print(len(set(names)) - len(names))
         total = stat(fs)
         print(sum(s for s in sizes if s <= 100000))
 
