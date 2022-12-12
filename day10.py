@@ -8,6 +8,6 @@ if __name__ == "__main__":
 
         print(sum(i*v[i] for i in [20, 60, 100, 140, 180, 220]))
 
-        s = ['#' if e-1 <= i%40 < e+2 else ' ' for i, e in enumerate(v[1:])]
+        s = ['█' if e-1 <= i%40 < e+2 else ' ' for i, e in enumerate(v[1:])]
         for r in range(0, len(s), 40):
             print(''.join(s[r:r+40]))
