@@ -2,19 +2,18 @@ from math import *
 from functools import *
 
 
-def cmp(a, b):
-    if isinstance(a, int) and isinstance(b, int):
-        return a - b
+def cmp(a: int | list, b: int | list):
+    match (a, b):
+        case (int(), int()): return a - b
 
-    if isinstance(a, int): a = [a]
-    if isinstance(b, int): b = [b]
+        case (int(), _): return cmp([a], b)
+        case (_, int()): return cmp(a, [b])
 
-    for _a, _b in zip(a, b):
-        c = cmp(_a, _b)
-        if c != 0:
-            return c
+        case ([a_head, *a_rest], [b_head, *b_rest]):
+            c = cmp(a_head, b_head)
+            return c if c != 0 else cmp(a_rest, b_rest)
 
-    return len(a) - len(b)
+        case _: return len(a) - len(b)
 
 
 if __name__ == "__main__":
