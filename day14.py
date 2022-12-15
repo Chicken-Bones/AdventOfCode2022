@@ -1,3 +1,6 @@
+from itertools import chain
+
+
 def sign(x: int):
     return 0 if x == 0 else 1 if x > 0 else -1
 
@@ -43,6 +46,11 @@ if __name__ == "__main__":
 
             while drop():
                 pass
+
+            #min_x = min(x for x, y in sand)-1
+            #max_x = max(x for x, y in sand)+1
+            #for y in range(max_y+3):
+            #    print(''.join(('█' if (x, y) in map else 'o' if (x, y) in sand else ' ' for x in range(min_x, max_x+1))))
 
             return len(sand)
 
