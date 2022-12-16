@@ -4,11 +4,6 @@ from collections import defaultdict
 from functools import cache
 
 
-def enumerate_pick(l: list):
-    for i, e in enumerate(l):
-        yield e, l[:i] + l[i + 1:]
-
-
 if __name__ == "__main__":
     with open("input/day16.txt") as file:
         valves = {}
@@ -40,26 +35,26 @@ if __name__ == "__main__":
     def cost(a, b):
         return dist[(a, b)] + 1
 
-    def path(v, m, rem: list):
+    def path(v, m, rem: frozenset):
         if m <= 0:
             return 0
 
-        return m*flow[v] + max((path(n, m-cost(v, n), rem2) for n, rem2 in enumerate_pick(rem)), default=0)
+        return m*flow[v] + max((path(n, m-cost(v, n), rem - {n}) for n in rem), default=0)
 
     @cache
     def elepath(rem):
         return path('AA', 26, rem)
 
-    def path2(v, m, rem: list):
+    def path2(v, m, rem: frozenset):
         c = 0
         if m > 0: # take this node yourself and recurse
-            c = m * flow[v] + max((path2(n, m-cost(v, n), rem2) for n, rem2 in enumerate_pick(rem)), default=0)
+            c = m * flow[v] + max((path2(n, m-cost(v, n), rem - {n}) for n in rem), default=0)
 
-        return max(c, elepath(tuple(rem))) # vs stop and give the rest to the elephant
+        return max(c, elepath(rem)) # vs stop and give the rest to the elephant
 
-    print(path('AA', 30, important))
+    print(path('AA', 30, frozenset(important)))
 
     t = time.time()
-    print(path2('AA', 26, important))
+    print(path2('AA', 26, frozenset(important)))
     print(f"{time.time() - t:.2f}s")
 
