@@ -35,22 +35,23 @@ if __name__ == "__main__":
     def cost(a, b):
         return dist[(a, b)] + 1
 
+    @cache
     def path(v, m, rem: frozenset):
         if m <= 0:
             return 0
 
-        return m*flow[v] + max((path(n, m-cost(v, n), rem - {n}) for n in rem), default=0)
+        rem -= {v}
+        return m*flow[v] + max((path(n, m-cost(v, n), rem) for n in rem), default=0)
 
     @cache
-    def elepath(rem):
-        return path('AA', 26, rem)
-
     def path2(v, m, rem: frozenset):
-        c = 0
-        if m > 0: # take this node yourself and recurse
-            c = m * flow[v] + max((path2(n, m-cost(v, n), rem - {n}) for n in rem), default=0)
-
-        return max(c, elepath(rem)) # vs stop and give the rest to the elephant
+        if m > 0:
+            # take this node yourself and recurse
+            rem = rem - {v}
+            return m * flow[v] + max((path2(n, m-cost(v, n), rem) for n in rem), default=0)
+        else:
+            # give the rest to the elephant
+            return path('AA', 26, rem)
 
     print(path('AA', 30, frozenset(important)))
 
