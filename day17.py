@@ -1,7 +1,7 @@
 rocks = [
     [(0, 0), (1, 0), (2, 0), (3, 0)],
     [(1, 0), (0, 1), (1, 1), (2, 1), (1, 2)],
-    [(2, 0), (2, 1), (0, 2), (1, 2), (2, 2)],
+    [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)],
     [(0, 0), (0, 1), (0, 2), (0, 3)],
     [(0, 0), (0, 1), (1, 0), (1, 1)]
 ]
@@ -11,23 +11,19 @@ if __name__ == "__main__":
         tower = set()
         jets = file.read().strip()
 
-        h = [0] * 7
+        tops = [0] * 7
 
         def rock_at(x, y, rock):
-            return ((x+rx, y-ry) for rx,ry in rock)
+            return ((x+rx, y+ry) for rx,ry in rock)
 
         def free(x, y, rock):
-            for rx, ry in rock_at(x, y, rock):
-                if rx < 0 or rx >= 7 or ry < 1 or (rx, ry) in tower:
-                    return False
-
-            return True
+            return all(0 <= rx < 7 and (rx, ry) not in tower for rx, ry in rock_at(x, y, rock))
 
         i_rock = 0
         i_jet = 0
 
-        states = []
-        heights = []
+        states = [None]
+        heights = [0]
 
         def drop():
             global i_rock, i_jet, period
@@ -36,7 +32,7 @@ if __name__ == "__main__":
             i_rock = (i_rock+1) % len(rocks)
 
             x = 2
-            y = max(h) + 4 + max(y for _,y in rock)
+            y = max(tops) + 4
 
             while True:
                 jet = jets[i_jet]
@@ -46,18 +42,18 @@ if __name__ == "__main__":
                 if free(x+dx, y, rock):
                     x += dx
 
-                if not free(x, y-1, rock):
+                if y == 1 or not free(x, y-1, rock):
                     break
 
                 y -= 1
 
             for rx, ry in rock_at(x, y, rock):
                 tower.add((rx, ry))
-                h[rx] = max(h[rx], ry)
+                tops[rx] = max(tops[rx], ry)
 
-            heights.append(max(h))
+            heights.append(max(tops))
 
-            c = tuple(y - e for e in h)
+            c = tuple(y - e for e in tops)
             states.append((i_rock, i_jet, c))
 
 
@@ -67,12 +63,12 @@ if __name__ == "__main__":
         print(heights[-1])
 
         period = next(i for i, e in enumerate(reversed(states)) if i > 0 and e == states[-1])
-        base = len(heights) - period - 1
+        base = len(heights) - 1 - period
         h_per_period = heights[-1] - heights[base]
 
         def solve(i):
             i -= base
             return heights[(i % period) + base] + h_per_period * (i // period)
 
-        print(solve(1000000000000 - 1))
+        print(solve(1000000000000))
 
