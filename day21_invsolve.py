@@ -21,7 +21,7 @@ if __name__ == "__main__":
         print(calc('root'))
 
         def solve_for(x):
-            p, eq = next((k, op) for k, op in ops.items() if isinstance(op, Operation) and (op.a == x or op.b == x))
+            p, eq = next((k, eq) for k, eq in ops.items() if isinstance(eq, Operation) and (eq.a == x or eq.b == x))
 
             if p == 'root':
                 return calc(eq.a if eq.b == x else eq.b)
